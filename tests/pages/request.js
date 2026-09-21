@@ -8,6 +8,7 @@ class RequestPage {
     this.createButton     = page.getByText('Create', { exact: true });
     this.requestButton    = page.getByText('Request', { exact: true });
     this.contracttype     = page.locator('div.mandatory__value-container.css-hlgwow').locator('div').nth(1);
+    this.template         = page.locator("//label[contains(.,'Template')]/following::input[@id='react-select-3-input']");
     this.contractcategory = page.locator("//label[contains(.,'Contract Category_1')]/following::input[1]");
     this.zone             = page.locator("//label[contains(.,'Zone')]/following::input[1]");
     this.selfparty        = page.locator("//label[contains(.,'Contract Self Party')]/following::input[1]");
@@ -65,7 +66,7 @@ class RequestPage {
   }
 
   // zone and details are optional
-  async fillRequestForm({ contracttype, contractcategory, zone, selfparty, otherparty, title, details }) {
+  async fillRequestForm({ contracttype, Template, contractcategory, zone, selfparty, otherparty, title, details }) {
     await this.openRequestForm();
     await this.selectOption(this.contracttype, contracttype);
     await this.selectOption(this.contractcategory, contractcategory);
@@ -74,47 +75,66 @@ class RequestPage {
     await this.fillOtherParty(otherparty);
     await this.fillTitle(title);
     if (details) await this.fillDetails(details);
+    if (Template) {
+      await this.selectOption(this.template, 'Automation Template');
+    }
   }
 
-  // ---------- the four flows (same names and parameters as before) ----------
+  // ---------- the four flows: each one receives the test data object ----------
 
-  async createRequestMandatory(contracttype, contractcategory, selfparty, otherparty, contracTatMandatory) {
+  async createRequestMandatory(data) {
     await this.fillRequestForm({
-      contracttype, contractcategory, selfparty, otherparty,
-      title: contracTatMandatory,
+      contracttype: data.contracttype,
+      contractcategory: data.contractcategory,
+      selfparty: data.selfparty,
+      otherparty: data.otherparty,
+      title: data.contracTatMandatory,
     });
     await this.submitAndVerify();
   }
 
-  async createRequestNonMandatory(contracttype, contractcategory, zone, selfparty, otherparty, contracttitNonMandatory, contractdetails) {
+  async createRequestNonMandatory(data) {
     await this.fillRequestForm({
-      contracttype, contractcategory, zone, selfparty, otherparty,
-      title: contracttitNonMandatory,
-      details: contractdetails,
+      contracttype: data.contracttype,
+      contractcategory: data.contractcategory,
+      zone: data.zone,
+      selfparty: data.selfparty,
+      otherparty: data.otherparty,
+      title: data.contracttitNonMandatory,
+      details: data.contractdetails,
     });
     await this.submitAndVerify();
   }
 
-  async createRequestSuppDocument(contracttype, contractcategory, zone, selfparty, otherparty, contractsuporttittle, contractdetails) {
+  async createRequestSuppDocument(data) {
     await this.fillRequestForm({
-      contracttype, contractcategory, zone, selfparty, otherparty,
-      title: contractsuporttittle,
-      details: contractdetails,
+      contracttype: data.contracttype,
+      contractcategory: data.contractcategory,
+      zone: data.zone,
+      selfparty: data.selfparty,
+      otherparty: data.otherparty,
+      title: data.contractsuporttittle,
+      details: data.contractdetails,
     });
 
     // File lives inside the project, so it works on every machine and on Jenkins
-    const filePath = path.resolve(__dirname, '../testdata/sample-document.pdf');
+    const filePath = path.resolve(__dirname, 'C://Users//nkhetmalis//Desktop//RazorSign_framework//Razorsign//tests//testdata//sample-docx-files-sampledocument (1).pdf');
     await this.supportingdoc.setInputFiles(filePath);
 
     await this.submitAndVerify();
   }
 
   // NOTE: this flow is identical to non-mandatory. Add the template-selection steps here.
-  async createRequestTemplate(contracttype, contractcategory, zone, selfparty, otherparty, contracttitTemplate, contractdetails) {
+  async createRequestTemplate(data) {
     await this.fillRequestForm({
-      contracttype, contractcategory, zone, selfparty, otherparty,
-      title: contracttitTemplate,
-      details: contractdetails,
+      contracttype: data.contracttype,
+      Template: data.Template,
+      contractcategory: data.contractcategory,
+      zone: data.zone,
+      selfparty: data.selfparty,
+      otherparty: data.otherparty,
+      title: data.contracttitTemplate,
+      details: data.contractdetails,
     });
     await this.submitAndVerify();
   }

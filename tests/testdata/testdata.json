@@ -4,6 +4,7 @@
     "branch":  { "username": "nkhetmalis@practiceleague.com",  "password": "Uberall*1234" },
 
   "contracttype": "test Automation type",
+  "Template": "Automation Template",
   "contractcategory": "Agreement",
   "zone" : "East",
   "selfparty": "ABC",
