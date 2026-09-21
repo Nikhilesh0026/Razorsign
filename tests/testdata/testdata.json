@@ -1,5 +1,16 @@
 {
     "admin":   { "username": "syadav@practiceleague.com",   "password": "Jul@2026" },
     "normal": { "username": "rb@practiceleague.com", "password": "Jul@2026" },
-    "branch":  { "username": "nkhetmalis@practiceleague.com",  "password": "Uberall*1234" }
+    "branch":  { "username": "nkhetmalis@practiceleague.com",  "password": "Uberall*1234" },
+
+  "contracttype": "test Automation type",
+  "contractcategory": "Agreement",
+  "zone" : "East",
+  "selfparty": "ABC",
+  "otherparty": "abc",
+  "contracTatMandatory":"This is automated Mandatory field Contract",
+  "contracttitNonMandatory": "This is automated Non Mandatory field contract",
+  "contracttitTemplate": "This is automated Template field contract",
+  "contractsuporttittle": "This is automated supporting document request",
+  "contractdetails": "Contract agreement for software development services."
 }

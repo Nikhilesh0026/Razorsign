@@ -11,7 +11,7 @@ module.exports = defineConfig({
   workers: Math.max(1, parseInt(process.env.WORKERS ?? '', 10) || 4),
 
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 2,
+  retries: process.env.CI ? 1 : 1,
 
   reporter: [['html', { open: 'never' }]],
 

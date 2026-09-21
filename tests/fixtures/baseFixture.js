@@ -1,15 +1,19 @@
 const base = require('@playwright/test');
 const Login = require('../pages/Login');
 const Dashboard = require('../pages/Dashboard');
+const { RequestPage } = require('../pages/request');
 
 exports.test = base.test.extend({
     dashboardPage: async ({ page }, use) => {
-       const dashboard = new Dashboard(page);   // "const", not "cost"
-       await use(dashboard); 
+        await use(new Dashboard(page));
     },
 
-    // loginAs(user) opens the app and logs in with that user
-    loginAs: async ({ page }, use) => {
+    requestPage: async ({ page }, use) => {
+        await use(new RequestPage(page));
+    },
+
+    // logAs(user) opens the app and logs in with that user
+    logAs: async ({ page }, use) => {
         const loginPage = new Login(page);
         await use(async (user) => {
             await page.goto(process.env.QA_URL);
