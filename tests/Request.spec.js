@@ -22,11 +22,11 @@ for (const role of roles) {
       await requestPage.createRequestMandatory(data);
     });
 
-    test('Verify create request with non-mandatory field', { tag: '@regressiion' }, async ({ requestPage }) => {
+    test('Verify create request with non-mandatory field', { tag: '@regression' }, async ({ requestPage }) => {
       await requestPage.createRequestNonMandatory(data);
     });
 
-    test('Verify create request with supporting document', { tag: '@regresssion' }, async ({ requestPage }) => {
+    test('Verify create request with supporting document', { tag: '@regression' }, async ({ requestPage }) => {
       await requestPage.createRequestSuppDocument(data);
     });
 

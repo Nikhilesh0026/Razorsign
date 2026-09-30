@@ -2,6 +2,8 @@
 const { defineConfig, devices } = require('@playwright/test');
 require('dotenv').config();
 
+
+
 module.exports = defineConfig({
   testDir: './tests',
   timeout: 60 * 1000,
@@ -16,7 +18,8 @@ module.exports = defineConfig({
   reporter: [['html', { open: 'never' }]],
 
   use: {
-    headless: process.env.HEADLESS !== 'false',
+   // headless: process.env.HEADLESS !== 'false',
+     baseURL: 'https://demorazorsignapi.practiceleague.com',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
