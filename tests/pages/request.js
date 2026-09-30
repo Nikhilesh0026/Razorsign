@@ -20,6 +20,14 @@ class RequestPage {
     this.submitButton     = page.locator("//input[@value='Create']");
     this.ok               = page.locator("//input[@value='Ok']");
     this.success          = page.getByText('Contract Request Added Successfully.', { exact: true });
+    this.selecttemp       = page.getByText('Select Template', { exact: true });
+    this.tempname         = page.getByText('Automation Template', { exact: true });
+    this.tempload         = page.locator("//input[@value='Load']");
+    this.fullnametxt      = page.locator('#Name');
+    this.year             = page.locator('#Graduation\ ');
+    this.date             = page.locator('#MaindateBirthdate');
+    this.savetemp         =  page.getByRole('button');
+
   }
 
   // ---------- reusable steps ----------
@@ -65,8 +73,21 @@ class RequestPage {
     await this.ok.click();
   }
 
+
+  async FillForm (fname)
+  
+  {
+   await this.selecttemp.click();
+   await this.tempload.click();
+   await expect(this.tempname).toHaveText('Automation Template');
+   await this.fullnametxt.fill(fname);
+   await this.savetemp.click();
+  
+
+  }
+
   // zone and details are optional
-  async fillRequestForm({ contracttype, Template, contractcategory, zone, selfparty, otherparty, title, details }) {
+  async fillRequestForm({ contracttype, Template, contractcategory, zone, selfparty, otherparty, title, details,fname }) {
     await this.openRequestForm();
     await this.selectOption(this.contracttype, contracttype);
     await this.selectOption(this.contractcategory, contractcategory);
@@ -77,7 +98,9 @@ class RequestPage {
     if (details) await this.fillDetails(details);
     if (Template) {
       await this.selectOption(this.template, 'Automation Template');
+       await this.FillForm(fname);
     }
+    
   }
 
   // ---------- the four flows: each one receives the test data object ----------
@@ -91,6 +114,7 @@ class RequestPage {
       title: data.contracTatMandatory,
     });
     await this.submitAndVerify();
+   
   }
 
   async createRequestNonMandatory(data) {
@@ -135,9 +159,16 @@ class RequestPage {
       otherparty: data.otherparty,
       title: data.contracttitTemplate,
       details: data.contractdetails,
+      fname : data.Fullname
+
+
+
     });
+    await this.FillForm(data.Fullname);
     await this.submitAndVerify();
+    
   }
+
 }
 
 module.exports = { RequestPage };

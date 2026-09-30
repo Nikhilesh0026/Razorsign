@@ -18,15 +18,15 @@ for (const role of roles) {
        await dashboardPage.closeRequestPopupIfShown();
     });
 
-    test('Verify create request with mandatory field', { tag: '@smoke' }, async ({ requestPage }) => {
+    test('Verify create request with mandatory field', { tag: '@smodsfkee' }, async ({ requestPage }) => {
       await requestPage.createRequestMandatory(data);
     });
 
-    test('Verify create request with non-mandatory field', { tag: '@regression' }, async ({ requestPage }) => {
+    test('Verify create request with non-mandatory field', { tag: '@regresdfssionn' }, async ({ requestPage }) => {
       await requestPage.createRequestNonMandatory(data);
     });
 
-    test('Verify create request with supporting document', { tag: '@regression' }, async ({ requestPage }) => {
+    test('Verify create request with supporting document', { tag: '@regrsdessionn' }, async ({ requestPage }) => {
       await requestPage.createRequestSuppDocument(data);
     });
 
@@ -34,16 +34,7 @@ for (const role of roles) {
       await requestPage.createRequestTemplate(data);
     });
 
+  
   });
-  const creators = ['admin', 'branch'];   // users who create the request and send it to Level 1
-  const approverRole = 'normal';          // Level 1 user who approves it
-
-// test.describe('Approve request', () => {
-//   for (const creator of creators) {
-//     test(`Request created by ${creator} is approved by ${approverRole}`, { tag: '@smoke' }, async () => {
-//       // 1. creator logs in, creates the request, sends it to Level 1
-//       // 2. normal user logs in again (new session) and approves
-//     });
-//   }
-// });
+ 
 }
