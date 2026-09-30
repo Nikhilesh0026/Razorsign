@@ -9,11 +9,11 @@ module.exports = defineConfig({
   timeout: 60 * 1000,
   expect: { timeout: 10 * 1000 },
 
-  fullyParallel: true,
+  //fullyParallel: true,
   workers: Math.max(1, parseInt(process.env.WORKERS ?? '', 10) || 4),
 
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 1,
+  retries: process.env.CI ? 0 : 1,
 
   reporter: [['html', { open: 'never' }]],
 

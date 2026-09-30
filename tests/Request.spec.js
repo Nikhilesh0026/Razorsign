@@ -32,6 +32,7 @@ for (const role of roles) {
 
     test('Verify create request with template generation', { tag: '@regression' }, async ({ requestPage }) => {
       await requestPage.createRequestTemplate(data);
+   //   await requestPage.loadTemplateAndFill(data);
     });
 
   

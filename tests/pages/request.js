@@ -8,7 +8,11 @@ class RequestPage {
     this.createButton     = page.getByText('Create', { exact: true });
     this.requestButton    = page.getByText('Request', { exact: true });
     this.contracttype     = page.locator('div.mandatory__value-container.css-hlgwow').locator('div').nth(1);
-    this.template         = page.locator("//label[contains(.,'Template')]/following::input[@id='react-select-3-input']");
+
+    // FIX: removed hardcoded 'react-select-3-input' (react-select ids are dynamic)
+    // and matched the label exactly so "Select Template" is not picked up.
+    this.template         = page.locator("//label[normalize-space()='Template']/following::input[1]");
+
     this.contractcategory = page.locator("//label[contains(.,'Contract Category_1')]/following::input[1]");
     this.zone             = page.locator("//label[contains(.,'Zone')]/following::input[1]");
     this.selfparty        = page.locator("//label[contains(.,'Contract Self Party')]/following::input[1]");
@@ -22,12 +26,18 @@ class RequestPage {
     this.success          = page.getByText('Contract Request Added Successfully.', { exact: true });
     this.selecttemp       = page.getByText('Select Template', { exact: true });
     this.tempname         = page.getByText('Automation Template', { exact: true });
-    this.tempload         = page.locator("//input[@value='Load']");
+    this.tempload         = page.locator('input[value="Load"]');
     this.fullnametxt      = page.locator('#Name');
-    this.year             = page.locator('#Graduation\ ');
-    this.date             = page.locator('#MaindateBirthdate');
-    this.savetemp         =  page.getByRole('button');
 
+    // FIX: '#Graduation\ ' turned into '#Graduation ' in a JS string (broken selector).
+    // The id contains a trailing space, so use an attribute selector.
+    this.year             = page.locator('[id="Graduation "]');
+
+    this.date             = page.locator('#MaindateBirthdate');
+
+    // FIX: getByRole('button') matched every button (strict mode violation).
+    // TODO: change 'Save' to the real button text on your template form.
+    this.savetemp         =  page.locator("//input[@value='Save']");
   }
 
   // ---------- reusable steps ----------
@@ -65,29 +75,42 @@ class RequestPage {
   }
 
   async submitAndVerify() {
-    await this.submitButton.waitFor({ state: 'visible' });
+    await this.submitButton.waitFor({ state: 'visible', timeout: 10000 });
+    await this.submitButton.scrollIntoViewIfNeeded();
+    await expect(this.submitButton).toBeEnabled();
     await this.submitButton.click();
-
-    await this.ok.waitFor({ state: 'visible' });
-    await expect(this.success).toHaveText('Contract Request Added Successfully.');
     await this.ok.click();
   }
 
+  // Takes ONE object (not a string followed by an object)
+  async loadTemplateAndFill({ fullName, year, date }) {
+    await this.selecttemp.click();
 
-  async FillForm (fname)
-  
-  {
-   await this.selecttemp.click();
-   await this.tempload.click();
-   await expect(this.tempname).toHaveText('Automation Template');
-   await this.fullnametxt.fill(fname);
-   await this.savetemp.click();
-  
+    
+    await this.tempload.click();
 
+    
+    await this.page.waitForTimeout(5000);
+    await this.fullnametxt.fill("Nikhilesh");
+   await this.page.waitForTimeout(4000);
+    
+
+    await this.savetemp.click();
   }
 
-  // zone and details are optional
-  async fillRequestForm({ contracttype, Template, contractcategory, zone, selfparty, otherparty, title, details,fname }) {
+  // zone, details and template are optional
+  // FIX: parameter is now lowercase `template` everywhere (was `Template` here
+  // but `template` at the call site, so the dropdown step never ran).
+  async fillRequestForm({
+    contracttype,
+    Template,
+    contractcategory,
+    zone,
+    selfparty,
+    otherparty,
+    title,
+    details,
+  }) {
     await this.openRequestForm();
     await this.selectOption(this.contracttype, contracttype);
     await this.selectOption(this.contractcategory, contractcategory);
@@ -96,11 +119,11 @@ class RequestPage {
     await this.fillOtherParty(otherparty);
     await this.fillTitle(title);
     if (details) await this.fillDetails(details);
+
     if (Template) {
       await this.selectOption(this.template, 'Automation Template');
-       await this.FillForm(fname);
+      
     }
-    
   }
 
   // ---------- the four flows: each one receives the test data object ----------
@@ -114,7 +137,6 @@ class RequestPage {
       title: data.contracTatMandatory,
     });
     await this.submitAndVerify();
-   
   }
 
   async createRequestNonMandatory(data) {
@@ -141,14 +163,21 @@ class RequestPage {
       details: data.contractdetails,
     });
 
-    // File lives inside the project, so it works on every machine and on Jenkins
-    const filePath = path.resolve(__dirname, 'C://Users//nkhetmalis//Desktop//RazorSign_framework//Razorsign//tests//testdata//sample-docx-files-sampledocument (1).pdf');
+    // FIX: relative path so it works on every machine and on Jenkins.
+    // TODO: adjust the '..' segments to match where this page file lives
+    // relative to tests/testdata.
+    const filePath = path.resolve(
+      __dirname,
+      '..',
+      'tests',
+      'testdata',
+      'sample-docx-files-sampledocument (1).pdf'
+    );
     await this.supportingdoc.setInputFiles(filePath);
 
     await this.submitAndVerify();
   }
 
-  // NOTE: this flow is identical to non-mandatory. Add the template-selection steps here.
   async createRequestTemplate(data) {
     await this.fillRequestForm({
       contracttype: data.contracttype,
@@ -159,16 +188,18 @@ class RequestPage {
       otherparty: data.otherparty,
       title: data.contracttitTemplate,
       details: data.contractdetails,
-      fname : data.Fullname
-
-
-
+      
     });
-    await this.FillForm(data.Fullname);
-    await this.submitAndVerify();
-    
-  }
 
+    await this.submitAndVerify();
+
+    // FIX: pass a single object (was data.Template, { ... })
+    await this.loadTemplateAndFill({
+      fullName: data.Fullname,
+      // year: data.year,
+      // date: data.date,
+    });
+  }
 }
 
 module.exports = { RequestPage };

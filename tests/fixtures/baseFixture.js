@@ -16,7 +16,7 @@ exports.test = base.test.extend({
     logAs: async ({ page }, use) => {
         const loginPage = new Login(page);
         await use(async (user) => {
-            await page.goto(process.env.QA_URL);
+            await page.goto('https://demorazorsign.practiceleague.com/');
             await loginPage.loginApplication(user.username, user.password);
         });
     },
