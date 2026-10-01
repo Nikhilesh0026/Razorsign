@@ -96,6 +96,7 @@ class RequestPage {
     
 
     await this.savetemp.click();
+
   }
 
   // zone, details and template are optional
@@ -199,6 +200,19 @@ class RequestPage {
       // year: data.year,
       // date: data.date,
     });
+  }
+
+  async editRequest(data) {
+    await this.fillRequestForm({
+      contracttype: data.contracttype,
+      contractcategory: data.contractcategory,
+      zone: data.zone,
+      selfparty: data.selfparty,
+      otherparty: data.otherparty,
+      title: data.contracttitNonMandatory,
+      details: data.contractdetails,
+    });
+    await this.submitAndVerify();
   }
 }
 
