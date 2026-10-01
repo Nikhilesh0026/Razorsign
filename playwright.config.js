@@ -19,12 +19,17 @@ module.exports = defineConfig({
 
   use: {
    // headless: process.env.HEADLESS !== 'false',
-     baseURL: 'https://demorazorsignapi.practiceleague.com',
+    //baseURL: 'https://demorazorsignapi.practiceleague.com',
+    baseURL: 'https://demorazorsign.practiceleague.com/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
 
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {name: 'setup', testMatch: /auth\.setup\.js/},
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } ,
+     dependencies: ['setup'],
+  },
+
   ],
 });
