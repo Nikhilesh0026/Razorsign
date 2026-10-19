@@ -1,15 +1,12 @@
 {
-  "admin": {
-    "username": "syadav@practiceleague.com",
-    "password": "Sep@2026"
+
+  "branch": {
+    "username": "nkhetmalis@practiceleague.com",
+    "password": "Uberall*1234"
   },
   "normal": {
     "username": "rb@practiceleague.com",
     "password": "Jul@2026"
-  },
-  "branch": {
-    "username": "nkhetmalis@practiceleague.com",
-    "password": "Uberall*1234"
   },
   "contracttype": "test Automation type",
   "Template": "Automation Template",
@@ -17,7 +14,8 @@
   "zone": "East",
   "selfparty": "ABC",
   "otherparty": "abc",
-  "contracTatMandatory": "This is automated Mandatory field Contract",
+  "contracTatMandatory": "approval mandatory feild for request",
+  "title" : "approval mandatory feild for request",
   "contracttitNonMandatory": "This is automated Non Mandatory field contract",
   "contracttitTemplate": "This is automated Template field contract",
   "contractsuporttittle": "This is automated supporting document request",
@@ -25,5 +23,11 @@
   "Template ":"Automation Template",
   "fullName": "Nikhilesh Khetmalis",
   "year": "2020",
-  "date": "01/15/1998"
+  "date": "01/15/1998",
+  "editedcontracttitTemplate": "This is edited automated Template field contract",
+  "editedcontracttype": "ABA",
+  "editedcontractcategory": "aaa",
+  "editedzone": "ABC",
+  "editedselfparty": "edited ABC",
+  "editedotherparty": "edited abc"
 }

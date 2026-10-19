@@ -1,43 +1,66 @@
 const { test } = require('./fixtures/baseFixture');
 const testData = require('./testdata/testdata.json');
-const { roles, authFile,restoreSession  } = require('./utils/auth');
+const { authFile, restoreSession } = require('./utils/auth');
+const { RequestPage } = require('../tests/pages/request');
 
-for (const role of roles) {
-  test.describe(`Create request as ${role}`, () => {
-    // Each role starts from its own saved session (no login steps in tests)
-    test.use({ storageState: authFile(role) });
+const role = 'branch';
 
-    // Shared request data; a "request" block inside a role overrides it
-    const data = { ...testData, ...(testData[role].request || {}) };
+test.describe(`Create request as ${role}`, () => {
+  test.use({ storageState: authFile(role) });
 
-    // ...inside test.describe:
-   test.beforeEach(async ({ context, page, dashboardPage }) => {
-  await restoreSession(context, role); // must come before page.goto
-  await page.goto('/');
-  await dashboardPage.verifyDashboardPage();
-  await dashboardPage.closeRequestPopupIfShown();
-    });
+  const data = { ...testData, ...(testData[role]?.request || {}) };
 
-    // TC01
-    test('TC01 - Verify create request with mandatory field @smoke', async ({ requestPage }) => {
-
-      await requestPage.createRequestMandatory(data);
-    });
-
-    // TC02
-    test('TC02 - Verify create request with non-mandatory field @regression', async ({ requestPage }) => {
-      await requestPage.createRequestNonMandatory(data);
-    });
-
-    // TC03
-    test('TC03 - Verify create request with supporting document @regression', async ({ requestPage }) => {
-      await requestPage.createRequestSuppDocument(data);
-    });
-
-    // TC04
-    test('TC04 - Verify create request with template generation @Nikhilesh', async ({ requestPage ,page}) => {
-      await page.goto('/');
-      await requestPage.createRequestTemplate(data);
-    });
+  test.beforeEach(async ({ context, page, dashboardPage }) => {
+    await restoreSession(context, role);
+    await page.goto('/');
+    await dashboardPage.verifyDashboardPage();
+    await dashboardPage.closeRequestPopupIfShown();
   });
-}
+
+  test('TC01 - Verify create request with mandatory field @reg', async ({ requestPage }) => {
+    await requestPage.createRequestMandatory(data);
+  });
+
+  test('TC02 - Verify create request with non-mandatory field @regression', async ({ requestPage }) => {
+    await requestPage.createRequestNonMandatory(data);
+  });
+
+  test('TC03 - Verify create request with supporting document @regression', async ({ requestPage }) => {
+    await requestPage.createRequestSuppDocument(data);
+  });
+
+  test('TC04 - Verify create request with template generation @regression', async ({ requestPage }) => {
+    await requestPage.createRequestTemplate(data);
+  });
+
+  test('TC05 - Verify delete request @regression', async ({ requestPage }) => {
+    await requestPage.createRequestMandatory(data);
+    await requestPage.requestdelete();
+  });
+
+  test('TC06 - Verify request pending flow @regression', async ({ browser, requestPage }) => {
+    await requestPage.createRequestMandatory(data);
+
+    const approverContext = await browser.newContext();
+    try {
+      const approverPage = await approverContext.newPage();
+      await approverPage.goto('/');
+      const approverRequestPage = new RequestPage(approverPage);
+      await approverRequestPage.requestapproval();
+    } finally {
+      await approverContext.close();
+    }
+  });
+
+  test('TC07 - Verify request approve from requestor @Nikhilesh', async ({ browser, requestPage }) => {
+    const requestorContext = await browser.newContext();
+    try {
+      const requestorPage = await requestorContext.newPage();
+      await requestorPage.goto('/');
+      const requestorRequestPage = new RequestPage(requestorPage);
+      await requestorRequestPage.requestorapprove();
+    } finally {
+      await requestorContext.close();
+    }
+  });
+});

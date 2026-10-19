@@ -13,22 +13,29 @@ module.exports = defineConfig({
   workers: Math.max(1, parseInt(process.env.WORKERS ?? '', 10) || 4),
 
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 0 : 1,
+  retries: process.env.CI ? 0 : 0,
 
   reporter: [['html', { open: 'never' }]],
 
   use: {
-   // headless: process.env.HEADLESS !== 'false',
-    baseURL: 'https://demorazorsignapi.practiceleague.com',
-    // baseURL: 'https://demorazorsign.practiceleague.com/',
+    headless: process.env.HEADLESS !== 'false',
+   // baseURL: 'https://demorazorsignapi.practiceleague.com',
+ //   baseURL: 'https://demorazorsign.practiceleague.com/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
 
+
+
   projects: [
-    //{name: 'setup', testMatch: /auth\.setup\.js/},
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } ,
-   //  dependencies: ['setup'],
+    {name: 'setup', 
+      
+      testMatch: /auth\.setup\.js/},
+
+    { name: 'chromium',
+       use: { ...devices['Desktop Chrome'] } ,
+     
+   //    dependencies: ['setup'],
   },
 
   ],
