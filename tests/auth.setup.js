@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { test: setup } = require('./fixtures/baseFixture');
-const Login = require('./pages/Login');
+const Login = require('../tests/pages/login');
 const testData = require('./testdata/testdata.json');
 const { roles, authFile, sessionFile } = require('./utils/auth');
 

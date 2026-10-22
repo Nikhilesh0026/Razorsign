@@ -2,6 +2,8 @@ const { test } = require('./fixtures/baseFixture');
 const testData = require('./testdata/testdata.json');
 const { authFile, restoreSession } = require('./utils/auth');
 const { RequestPage } = require('../tests/pages/request');
+const { startTrace, stopTrace } = require('../tests/utils/Screenshottracehelpers');
+const { expectToastMessage } = require('../tests/utils/assertionhelper');
 
 const role = 'branch';
 
@@ -11,11 +13,17 @@ test.describe(`Create request as ${role}`, () => {
   const data = { ...testData, ...(testData[role]?.request || {}) };
 
   test.beforeEach(async ({ context, page, dashboardPage }) => {
+    await startTrace(context);
     await restoreSession(context, role);
     await page.goto('/');
     await dashboardPage.verifyDashboardPage();
     await dashboardPage.closeRequestPopupIfShown();
   });
+
+  test.afterEach(async ({ context }, testInfo) => {
+  const tracePath = await stopTrace(context, `${testInfo.title}`);
+  await testInfo.attach('trace', { path: tracePath });
+});
 
   test('TC01 - Verify create request with mandatory field @reg', async ({ requestPage }) => {
     await requestPage.createRequestMandatory(data);
@@ -38,8 +46,9 @@ test.describe(`Create request as ${role}`, () => {
     await requestPage.requestdelete();
   });
 
-  test('TC06 - Verify request pending flow @regression', async ({ browser, requestPage }) => {
+  test('TC06 - Verify request pending flow @Nikhilesh', async ({ browser, requestPage }) => {
     await requestPage.createRequestMandatory(data);
+      // await expectToastMessage(page, 'created');
 
     const approverContext = await browser.newContext();
     try {
@@ -47,12 +56,13 @@ test.describe(`Create request as ${role}`, () => {
       await approverPage.goto('/');
       const approverRequestPage = new RequestPage(approverPage);
       await approverRequestPage.requestapproval();
+     // await expectToastMessage(approverPage, 'sent');
     } finally {
       await approverContext.close();
     }
   });
 
-  test('TC07 - Verify request approve from requestor @Nikhilesh', async ({ browser, requestPage }) => {
+  test('TC07 - Verify request approve from requestor @regression', async ({ browser, requestPage }) => {
     const requestorContext = await browser.newContext();
     try {
       const requestorPage = await requestorContext.newPage();
