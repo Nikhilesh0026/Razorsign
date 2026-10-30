@@ -13,17 +13,17 @@ test.describe(`Create request as ${role}`, () => {
   const data = { ...testData, ...(testData[role]?.request || {}) };
 
   test.beforeEach(async ({ context, page, dashboardPage }) => {
-    await startTrace(context);
+   // await startTrace(context);
     await restoreSession(context, role);
     await page.goto('/');
     await dashboardPage.verifyDashboardPage();
     await dashboardPage.closeRequestPopupIfShown();
   });
 
-  test.afterEach(async ({ context }, testInfo) => {
-  const tracePath = await stopTrace(context, `${testInfo.title}`);
-  await testInfo.attach('trace', { path: tracePath });
-});
+  // test.afterEach(async ({ context }, testInfo) => {
+  //   const tracePath = await stopTrace(context, `${testInfo.title}`);
+  //   await testInfo.attach('trace', { path: tracePath });
+  // });
 
   test('TC01 - Verify create request with mandatory field @reg', async ({ requestPage }) => {
     await requestPage.createRequestMandatory(data);
@@ -46,31 +46,59 @@ test.describe(`Create request as ${role}`, () => {
     await requestPage.requestdelete();
   });
 
-  test('TC06 - Verify request pending flow @Nikhilesh', async ({ browser, requestPage }) => {
-    await requestPage.createRequestMandatory(data);
+  test.describe('Pending approval flow', () => {
+    test('TC06 - Verify request pending flow @regression', async ({ browser, requestPage }) => {
+      await requestPage.createRequestMandatory(data);
       // await expectToastMessage(page, 'created');
 
-    const approverContext = await browser.newContext();
-    try {
-      const approverPage = await approverContext.newPage();
-      await approverPage.goto('/');
-      const approverRequestPage = new RequestPage(approverPage);
-      await approverRequestPage.requestapproval();
-     // await expectToastMessage(approverPage, 'sent');
-    } finally {
-      await approverContext.close();
-    }
-  });
+      const approverContext = await browser.newContext();
+      try {
+        const approverPage = await approverContext.newPage();
+        await approverPage.goto('/');
+        const approverRequestPage = new RequestPage(approverPage);
+        await approverRequestPage.requestapproval();
 
-  test('TC07 - Verify request approve from requestor @regression', async ({ browser, requestPage }) => {
-    const requestorContext = await browser.newContext();
-    try {
-      const requestorPage = await requestorContext.newPage();
-      await requestorPage.goto('/');
-      const requestorRequestPage = new RequestPage(requestorPage);
-      await requestorRequestPage.requestorapprove();
-    } finally {
-      await requestorContext.close();
-    }
+        // await expectToastMessage(approverPage, 'sent');
+      } finally {
+        await approverContext.close();
+      }
+    });
+
+    test('TC07 - Verify request approve from requestor @RequestApprovals', async ({ browser }) => {
+      const requestorContext = await browser.newContext();
+      try {
+        const requestorPage = await requestorContext.newPage();
+        await requestorPage.goto('/');
+        const requestorRequestPage = new RequestPage(requestorPage);
+        await requestorRequestPage.requestorapprove();
+      } finally {
+       // await requestorContext.close();
+      }
+    });
+
+    test('TC08 - Verify request approve from level1 User @regression', async ({ browser }) => {
+      const level1Context = await browser.newContext();
+      try {
+        const level1Page = await level1Context.newPage();
+        await level1Page.goto('/');
+        const level1RequestPage = new RequestPage(level1Page);
+        await level1RequestPage.level1Userapprove();
+      } finally {
+        await level1Context.close();
+      }
+    });
+
+    test('TC09 - Verify request approve from level2 User @regression', async ({ browser }) => {
+      const level2Context = await browser.newContext();
+      try {
+        const level2Page = await level2Context.newPage();
+        await level2Page.goto('/');
+        const level2RequestPage = new RequestPage(level2Page);
+        await level2RequestPage.level2Userapprove();
+      } finally {
+        await level2Context.close();
+      }
+    });
+    
   });
 });

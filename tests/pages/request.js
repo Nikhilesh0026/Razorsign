@@ -50,6 +50,7 @@ class RequestPage {
     this.viewRequestBtn   =   page.getByRole('button', { name: 'View' })
     this.approveBtn       = page.locator("//input[@value='Approve']");
     this.pendingOption    = page.getByLabel('Pending', { exact: true });
+     this.ApproveOption    = page.getByLabel('Approve', { exact: true });
     this.saveApproveBtn   = page.locator("//input[@id='ApproveContract']");
 
     // ---------- requestor approval ----------
@@ -58,7 +59,7 @@ class RequestPage {
     this.requestDetails   = page.locator("//input[@id='react-select-2-input']");
     this.approveReplyBtn  = page.locator('button').filter({ hasText: 'Click here' }).first();
     this.replyTextarea    = page.locator('textarea.mandatory');
-    this.updateApproveBtn =   page.locator('input[type="button"]');
+    this.updateApproveBtn =  page.locator('input.updaterequestBtn:visible');
     // ---------- login / logout ----------
     // TODO: replace with a locator for the profile/avatar icon
     this.profileIcon      = page.locator('div.img-wrap:visible');
@@ -72,7 +73,7 @@ class RequestPage {
 
   async openRequestForm() {
     await this.createButton.hover();
-    await this.requestButton.waitFor({ state: 'visible' });
+   // await this.requestButton.waitFor({ state: 'visible' });
     await this.requestButton.click();
   }
 
@@ -188,6 +189,7 @@ class RequestPage {
     await this.approveBtn.click();
     await this.pendingOption.click();
     await this.saveApproveBtn.click();
+    await this.expect(locator.saveApproveBtn).toBeEnabled();
   }
 
   /**
@@ -200,12 +202,52 @@ class RequestPage {
     await this.openRequestByTitle(title);
 
     await this.requestDetails.click();
+    
+   await expect(this.approvalsTab).toBeVisible({ timeout: 10000 });
     await this.approvalsTab.click();
-    await this.approveReplyBtn.waitFor({ state: 'visible', timeout: 10000 });
+     await expect(this.approveReplyBtn).toBeVisible({ timeout: 10000 });
     await this.approveReplyBtn.click();
+   
     await this.replyTextarea.fill('approve');
-    await this.updateApproveBtn.click();
+
+   // await this.updateApproveBtn.click();
+
+
+await this.updateApproveBtn.click({ force: true });
   }
+
+
+async level1Userapprove( title = 'approval mandatory feild for request') {
+    await this.login(requireEnv('NORMAL_USERNAME'), requireEnv('NORMAL_PASSWORD'));
+    await this.homeLink.click();
+    await this.openRequestByTitle(title);
+    
+ await this.approveBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await this.approveBtn.click();
+    await this.ApproveOption.click();
+    await this.saveApproveBtn.click();
+
+}
+
+async level2Userapprove( title = 'approval mandatory feild for request') {
+    await this.login(requireEnv('Level2_USERNAME'), requireEnv('Level2_PASSWORD'));
+    await this.homeLink.click();
+    await this.openRequestByTitle(title);
+    
+ await this.approveBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await this.approveBtn.click();
+    await this.ApproveOption.click();
+    await this.saveApproveBtn.click();
+
+
+
+
+}
+
+
+
+
+
 
   // ---------- form filling ----------
 

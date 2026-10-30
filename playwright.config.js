@@ -22,7 +22,7 @@ module.exports = defineConfig({
    // baseURL: 'https://demorazorsignapi.practiceleague.com',
    baseURL: 'https://demorazorsign.practiceleague.com/',
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    
   },
 
 
